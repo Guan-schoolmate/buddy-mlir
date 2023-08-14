@@ -1,14 +1,9 @@
 #ifndef _LOADSAVE_HPP_
 #define _LOADSAVE_HPP_
 
-#include"buddy/DIP/ImageContainer.h"
-#include"buddy/DIP/imgcodecs/Replenishment.hpp"
-#include"buddy/DIP/imgcodecs/grfmt_bmp.hpp"
-/**
- * @struct ImageCodecInitializer
- *
- * Container which stores the registered codecs to be used by OpenCV
- */
+#include "buddy/DIP/ImageContainer.h"
+#include "buddy/DIP/imgcodecs/Replenishment.hpp"
+#include "buddy/DIP/imgcodecs/grfmt_bmp.hpp"
 
 template <typename T, size_t N> struct ImageCodecInitializer {
   /**
@@ -20,8 +15,8 @@ template <typename T, size_t N> struct ImageCodecInitializer {
     encoders.push_back(std::make_unique<BmpEncoder<T, N>>());
 
     /// JPEG Support
-    //decoders.push_back(std::make_unique<JpegDecoder<T, N>>());
-    //encoders.push_back(std::make_unique<JpegEncoder<T, N>>());
+    // decoders.push_back(std::make_unique<JpegDecoder<T, N>>());
+    // encoders.push_back(std::make_unique<JpegEncoder<T, N>>());
   }
 
   std::vector<std::unique_ptr<BaseImageDecoder<T, N>>> decoders;
@@ -89,25 +84,23 @@ findDecoder(const String &filename) {
 template <typename T, size_t N>
 Img<T, N> imread(const String &filename, int flags) {
 
-  //std::cout << "imread:" << filename << std::endl;
-  std::unique_ptr<BaseImageDecoder<T, N>> decoder =
-      findDecoder<T, N>(filename);
+  // std::cout << "imread:" << filename << std::endl;
+  std::unique_ptr<BaseImageDecoder<T, N>> decoder = findDecoder<T, N>(filename);
 
   if (decoder) {
 
-    // 转换为 BmpDecoder<T, N> 的指针
+    // Convert to a pointer of BmpDecoder<T, N>
     BmpDecoder<T, N> *bmpDecoderPtr =
         dynamic_cast<BmpDecoder<T, N> *>(decoder.get());
 
     if (bmpDecoderPtr) {
-      // 创建 BmpDecoder<T, N> 实例后，进行相关操作
-      // 例如：调用成员函数，解码图像等
-      // 定义图像是否缩放
+      // After creating an instance of BmpDecoder<T, N>, perform relevant
+      // operations. Define whether the image is scaled
       int scale_denom = 1;
       bmpDecoderPtr->setScale(scale_denom);
-      // 设置图像路径
+      // Set the image path.
       bmpDecoderPtr->setSource(filename);
-      // 读取图像头
+      // Read the image header
       bmpDecoderPtr->readHeader();
       _Size size(bmpDecoderPtr->width(), bmpDecoderPtr->height());
       // grab the decoded type
@@ -121,10 +114,10 @@ Img<T, N> imread(const String &filename, int flags) {
       } else {
         type = CV_MAKETYPE(CV_MAT_DEPTH(type), 1);
       }
-      // 创建一个Img类
+      // Create a class named Img.
       Img<T, N> Image;
       Image.create(size.height, size.width, type);
-      // 读取图像数据
+      // Read image data.
       bmpDecoderPtr->readData(Image);
 
       return Image;
@@ -170,15 +163,14 @@ static std::unique_ptr<BaseImageEncoder<T, N>> findEncoder(const String &_ext) {
 
 template <typename T, size_t N>
 static bool imwrite_(const String &filename, const Img<T, N> &img_vec) {
-  // bool isMultiImg = img_vec.size() > 1; 
+  // bool isMultiImg = img_vec.size() > 1;
   std::vector<Img<T, N>> write_vec;
 
-  std::unique_ptr<BaseImageEncoder<T, N>> encoder =
-      findEncoder<T, N>(filename);
+  std::unique_ptr<BaseImageEncoder<T, N>> encoder = findEncoder<T, N>(filename);
 
   if (encoder) {
 
-    // 转换为 BmpEncoder<T, N> 的指针
+    // Convert to a pointer of BmpEncoder<T, N>
     BmpEncoder<T, N> *bmpEncoderPtr =
         dynamic_cast<BmpEncoder<T, N> *>(encoder.get());
 
