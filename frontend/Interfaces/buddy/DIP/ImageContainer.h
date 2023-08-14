@@ -301,8 +301,8 @@ Img<T, N>::Img(Img<T, N> &&m)
   this->aligned = m.aligned;
   this->data = m.data;
   this->size = m.size;
-  std::swap(this->sizes, other.sizes);
-  std::swap(this->strides, other.strides);
+  std::swap(this->sizes, m.sizes);
+  std::swap(this->strides, m.strides);
   // Assign the NULL pointer to the original aligned and allocated members to
   // avoid the double free error.
   m.allocated = m.aligned = m.data = nullptr;
@@ -326,11 +326,11 @@ template <typename T, size_t N> Img<T, N> &Img<T, N>::operator=(Img<T, N> &&m) {
     std::swap(this->cols, m.cols);
     std::swap(this->_type, m._type);
     std::swap(this->size, m.size);
-    std::swap(this->allocated, other.allocated);
+    std::swap(this->allocated, m.allocated);
     std::swap(this->aligned, m.aligned);
     std::swap(this->data, m.data);
-    std::swap(this->strides, other.strides);
-    std::swap(this->sizes, other.sizes);
+    std::swap(this->strides, m.strides);
+    std::swap(this->sizes, m.sizes);
     // Assign the NULL pointer to the original aligned and allocated members to
     // avoid the double free error.
     m.allocated = m.aligned = m.data = nullptr;
