@@ -4,7 +4,6 @@
 #include"buddy/DIP/ImageContainer.h"
 #include"buddy/DIP/imgcodecs/Replenishment.hpp"
 #include"buddy/DIP/imgcodecs/grfmt_bmp.hpp"
-#include"buddy/DIP/imgcodecs/grfmt_jpeg.hpp"
 /**
  * @struct ImageCodecInitializer
  *
@@ -21,8 +20,8 @@ template <typename T, size_t N> struct ImageCodecInitializer {
     encoders.push_back(std::make_unique<BmpEncoder<T, N>>());
 
     /// JPEG Support
-    decoders.push_back(std::make_unique<JpegDecoder<T, N>>());
-    encoders.push_back(std::make_unique<JpegEncoder<T, N>>());
+    //decoders.push_back(std::make_unique<JpegDecoder<T, N>>());
+    //encoders.push_back(std::make_unique<JpegEncoder<T, N>>());
   }
 
   std::vector<std::unique_ptr<BaseImageDecoder<T, N>>> decoders;
@@ -130,39 +129,6 @@ Img<T, N> imread(const String &filename, int flags) {
 
       return Image;
     }
-
-     //转换为 JpegDecoder<T, N> 的指针
-    JpegDecoder<T, N> *JpegDecoderPtr =
-        dynamic_cast<JpegDecoder<T, N> *>(decoder.get());
-    if (JpegDecoderPtr) {
-      // 创建 JpegDecoder<T, N> 实例后，进行相关操作
-      // 例如：调用成员函数，解码图像等
-      // 定义图像是否缩放
-      int scale_denom = 1;
-      JpegDecoderPtr->setScale(scale_denom);
-      // 设置图像路径
-      JpegDecoderPtr->setSource(filename);
-      // 读取图像头
-      JpegDecoderPtr->readHeader();
-      _Size size(JpegDecoderPtr->width(), JpegDecoderPtr->height());
-      // grab the decoded type
-      int type = JpegDecoderPtr->type();
-      if ((flags & IMREAD_ANYDEPTH) == 0) {
-        type = CV_MAKETYPE(CV_8U, CV_MAT_CN(type));
-      }
-      if ((flags & IMREAD_COLOR) != 0 ||
-          ((flags & IMREAD_ANYCOLOR) != 0 && CV_MAT_CN(type) > 1)) {
-        type = CV_MAKETYPE(CV_MAT_DEPTH(type), 3);
-      } else {
-        type = CV_MAKETYPE(CV_MAT_DEPTH(type), 1);
-      }
-      // 创建一个Img类
-      Img<T, N> Image;
-      Image.create(size.height, size.width, type);
-      // 读取图像数据
-      JpegDecoderPtr->readData(Image);
-      return Image;
-    }
   }
 }
 template <typename T, size_t N>
@@ -204,7 +170,7 @@ static std::unique_ptr<BaseImageEncoder<T, N>> findEncoder(const String &_ext) {
 
 template <typename T, size_t N>
 static bool imwrite_(const String &filename, const Img<T, N> &img_vec) {
-  // bool isMultiImg = img_vec.size() > 1; 存储多张图片
+  // bool isMultiImg = img_vec.size() > 1; 
   std::vector<Img<T, N>> write_vec;
 
   std::unique_ptr<BaseImageEncoder<T, N>> encoder =
@@ -222,18 +188,6 @@ static bool imwrite_(const String &filename, const Img<T, N> &img_vec) {
       bool code = false;
       std::vector<int> params;
       code = bmpEncoderPtr->write(img_vec, params);
-      return code;
-    }
-
-    // 转换为 JpegEncoder<T, N> 的指针
-    JpegEncoder<T, N> *JpegEncoderPtr =
-        dynamic_cast<JpegEncoder<T, N> *>(encoder.get());
-    if (JpegEncoderPtr)
-    {
-      JpegEncoderPtr->setDestination(filename);
-      bool code = false;
-      std::vector<int> params;
-      code = JpegEncoderPtr->write(img_vec, params);
       return code;
     }
   }
