@@ -62,7 +62,7 @@ public:
    external data using OpenCV functions. The external data is not automatically
     deallocated, so you should take care of it.*/
 
-  Img( int rows,  int cols, int type, T *get_data);
+  Img(int rows, int cols, int type, T *get_data);
   /*
     @ndims:ndims Array dimensionality.
     @sizes sizes Array of integers specifying an n-dimensional array shape.
@@ -108,7 +108,7 @@ public:
     @sizes: sizes Array of integers specifying a new array shape.
     @type: type New matrix type.
   */
-  void create(int ndims,  int *sizes, int _type);
+  void create(int ndims, int *sizes, int _type);
 
   // The method increments the reference counter associated with the matrix data
   // TODO gc : void addref();
@@ -175,7 +175,7 @@ Img<T, N>::Img(int _rows, int _cols, int type)
 }
 /*
   @ndims:ndims Array dimensionality.
-  @sizes��sizes Array of integers specifying an n-dimensional array shape.
+  @sizes:sizes Array of integers specifying an n-dimensional array shape.
   @type:type Array type. Use CV_8UC1, ..., CV_64FC4 to create 1-4 channel
   matrices, or CV_8UC(n), ..., CV_64FC(n) to create multi-channel (up to
   CV_CN_MAX channels) matrices.
@@ -194,9 +194,9 @@ template <typename T, size_t N>
 Img<T, N>::Img(const Img<T, N> &m)
     : MemRef<T, N>(), flags(m.flags), dims(m.dims), rows(m.rows), cols(m.cols),
       _type(m._type) {
-    //this->_size = new size_t[m.dims];
-    for (size_t i = 0; i < N; i++) {
-      this->sizes[i] = m.sizes[i];
+
+  for (size_t i = 0; i < N; i++) {
+    this->sizes[i] = m.sizes[i];
   }
   this->setStrides();
   this->size = total();
@@ -207,9 +207,6 @@ Img<T, N>::Img(const Img<T, N> &m)
     this->aligned[i] = m.aligned[i];
   }
 }
-
-// destructor - calls release()
-// template <typename T, size_t N> Img<T, N>::~Img(); // release()
 /*
   Allocates new array data if needed.
   @rows:New number of rows.
@@ -224,13 +221,13 @@ void Img<T, N>::create(int rows, int cols, int type) {
   //  return;
   this->_type = type;
   this->cols = cols;
-  this->rows = rows; 
+  this->rows = rows;
   this->sizes[0] = cols;
   this->sizes[1] = rows;
-  for (int i=0;i < N;i++) {
+  for (int i = 0; i < N; i++) {
     sz[i] = this->sizes[i];
   }
-  create(2, sz , _type);
+  create(2, sz, _type);
 }
 /*
   @mdims: ndims New array dimensionality.
@@ -238,7 +235,7 @@ void Img<T, N>::create(int rows, int cols, int type) {
   @type: type New matrix type.
 */
 template <typename T, size_t N>
-void Img<T, N>::create(int ndims,  int *sizes, int type) {
+void Img<T, N>::create(int ndims, int *sizes, int type) {
   int i;
   this->_type = type;
   this->dims = ndims;
@@ -268,9 +265,8 @@ Img<T, N> &Img<T, N>::operator=(const Img<T, N> &m) {
     this->dims = m.dims;
     this->rows = m.rows;
     this->cols = m.cols;
-    //this->_size = m._size;
     for (int i = 0; i < this->dims; i++) {
-        this->sizes[i] = m.sizes[i];
+      this->sizes[i] = m.sizes[i];
     }
     this->size = total();
   } else {
@@ -337,18 +333,16 @@ template <typename T, size_t N> Img<T, N> &Img<T, N>::operator=(Img<T, N> &&m) {
   }
 }
 template <typename T, size_t N>
-Img<T, N>::Img( int rows,  int cols, int type, T * get_data)
-    : MemRef<T, N>(), dims(2), rows(rows), cols(cols), _type(type)
-       {
-  
+Img<T, N>::Img(int rows, int cols, int type, T *get_data)
+    : MemRef<T, N>(), dims(2), rows(rows), cols(cols), _type(type) {
+
   this->data = get_data;
   this->aligned = get_data;
   this->sizes[0] = rows;
   this->sizes[1] = cols;
-  this->size = total(); 
+  this->size = total();
   this->setStrides();
 }
-
 
 template <typename T, std::size_t N> int Img<T, N>::channels() const {
   return CV_MAT_CN(_type);
@@ -363,13 +357,13 @@ template <typename T, size_t N> int Img<T, N>::_cols() const {
 }
 
 template <typename T, size_t N> size_t Img<T, N>::elemsize() const {
-  //return CV_ELEM_SIZE(_type);
+  // return CV_ELEM_SIZE(_type);
   return sizeof(T) * channels();
 }
 
 template <typename T, size_t N> size_t Img<T, N>::total() {
   if (dims <= 2) {
-    return (size_t)rows * cols  * channels();
+    return (size_t)rows * cols * channels();
   }
   size_t p = 1;
   for (int i = 0; i < dims; i++)
@@ -380,7 +374,7 @@ template <typename T, size_t N> size_t Img<T, N>::total() {
 template <typename T, size_t N>
 template <typename _Tp>
 _Tp Img<T, N>::at(int row, int col) {
-  if (row < 0 ||col < 0) {
+  if (row < 0 || col < 0) {
     throw std::out_of_range("Index out of bounds");
   }
 
