@@ -146,14 +146,7 @@ void BmpDecoder<T, N>::maskBGRA(uchar *des, uchar *src, int num) {
 template <typename T, size_t N> bool BmpDecoder<T, N>::readHeader() {
   bool result = false;
   bool iscolor = false;
-
-  /*if (!this->m_buf.empty()) {
-    if (!m_strm.open(m_buf))
-      return false;
-  } else if (!m_strm.open(m_filename))
-    return false;*/
   m_strm.open(this->m_filename);
-
   try {
     m_strm.skip(10);
     m_offset = m_strm.getDWord();
@@ -434,11 +427,6 @@ bool BmpEncoder<T, N>::write(const Img<T, N> &img, const std::vector<int> &) {
   uchar zeropad[] = "\0\0\0\0";
   WLByteStream strm;
 
-  // if (this->m_buf) {
-  //   if (!strm.open(*this->m_buf))
-  //     return false;
-  // } else if (!strm.open(this->m_filename))
-  //   return false;
   strm.open(this->m_filename);
 
   int bitmapHeaderSize = 40;
@@ -446,9 +434,6 @@ bool BmpEncoder<T, N>::write(const Img<T, N> &img, const std::vector<int> &) {
   int headerSize = 14 /* fileheader */ + bitmapHeaderSize + paletteSize;
   size_t fileSize = (size_t)fileStep * height + headerSize;
   PaletteEntry palette[256];
-
-  /*if (this->m_buf)
-    this->m_buf->reserve(alignSize(fileSize + 16, 256));*/
 
   // write signature 'BM'
   strm.putBytes(fmtSignBmp, (int)strlen(fmtSignBmp));
