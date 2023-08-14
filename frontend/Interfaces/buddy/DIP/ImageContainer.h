@@ -216,9 +216,6 @@ Img<T, N>::Img(const Img<T, N> &m)
 template <typename T, size_t N>
 void Img<T, N>::create(int rows, int cols, int type) {
 
-  // if (dims <= 2 && rows == this->rows && cols == this->cols &&
-  //    type() == this->type && this->data)
-  //  return;
   this->_type = type;
   this->cols = cols;
   this->rows = rows;
